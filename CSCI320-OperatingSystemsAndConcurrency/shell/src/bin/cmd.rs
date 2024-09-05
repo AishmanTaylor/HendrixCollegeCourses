@@ -23,7 +23,11 @@ fn main() {
         start(arguments)
     } else if function =="counter" {
         counter(arguments)
-    } else {
+    } else if function =="findtext" {
+        findtext(arguments) 
+    } else if function =="order" {
+        order(arguments) 
+    }else {
         println!("Error, invalid command");
     }
 }
@@ -67,7 +71,7 @@ fn duplicate(files: Vec<String>) {
 
 fn start(arguments: Vec<String>) {
     let mut head_size = 10;
-    let mut files: Vec<String> = Vec::new();
+    let files:Vec<String>; 
 
     if !arguments.is_empty() && arguments[0].starts_with("-") {
         if let Ok(n) = arguments[0][1..].parse::<usize>() {
@@ -103,7 +107,7 @@ fn counter(arguments: Vec<String>) {
     let mut count_words = true;
     let mut count_lines = true;
     let mut count_chars = true;
-    let mut files: Vec<String> = Vec::new();
+    let files:Vec<String>; 
 
     if !arguments.is_empty() && arguments[0].starts_with("-") {
         let options = &arguments[0][1..];
@@ -146,5 +150,74 @@ fn counter(arguments: Vec<String>) {
             }
             Err(e) => eprintln!("Failed to open {}: {}", file, e),
         }
+    }
+}
+
+fn findtext(arguments: Vec<String>) {
+    if arguments.is_empty() {
+        eprint!("Error: no pattern provided.");
+        return;
+    }
+
+    let pattern = &arguments[0];
+    let files = &arguments[1..];
+
+    for file in files {
+        match File::open(&file) {
+            Ok(f) => {
+                let reader = io::BufReader::new(f);
+                println!("--- Matches in {} ---", file);
+                for line in reader.lines() {
+                    match line {
+                        Ok(content) => {
+                            if content.contains(pattern) {
+                                println!("{}", content);
+                            }
+                        }
+                        Err(e) => eprintln!("Error reading line: {}", e),
+                    }
+                }
+            }
+            Err(e) => eprintln!("Failed to open {}: {}", file, e),
+        }
+    }
+}
+
+fn order(arguments: Vec<String>) {
+    let mut reverse = false;
+    let files:Vec<String>; 
+
+    if !arguments.is_empty() && arguments[0] == "-r" {
+        reverse = true;
+        files = arguments[1..].to_vec();
+    } else {
+        files = arguments;
+    }
+
+    let mut all_lines:Vec<String> = Vec::new();
+
+    for file in files {
+        match File::open(&file) {
+            Ok(f) => {
+                let reader = io::BufReader::new(f);
+                for line in reader.lines() {
+                    match line {
+                        Ok(content) => all_lines.push(content),
+                        Err(e) => eprintln!("Error reading line: {}", e),
+                    }
+                }
+            }
+            Err(e) => eprintln!("Failed to open {}: {}", file, e),
+        }
+    }
+
+    if reverse {
+        all_lines.sort_by(|a ,b| b.cmp(a))
+    } else {
+        all_lines.sort();
+    }
+
+    for line in all_lines {
+        println!("{}", line);
     }
 }
