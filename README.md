@@ -1,5 +1,5 @@
 # HendrixCollegeCourses
-[Details for a Major in Computer Science]([https://hendrix-cs.github.io/)
+Details for a [Major in Computer Science](https://hendrix-cs.github.io/) at Hendrix College
 11 courses distributed as follows:
 
 Core Classes: 
